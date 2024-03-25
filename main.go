@@ -9,10 +9,11 @@ import (
 	"log"
 	"net/http"
 	"restful/db"
+	"strconv"
 )
 
 type album struct {
-	ID     string  `json:"id"`
+	ID     int     `json:"id"`
 	Title  string  `json:"title"`
 	Artist string  `json:"artist"`
 	Price  float64 `json:"price"`
@@ -47,7 +48,7 @@ func main() {
 	})
 
 	router.GET("/albums/:id", func(c *gin.Context) {
-		id := c.Param("id")
+		id, _ := strconv.Atoi(c.Param("id"))
 		album := &album{
 			ID: id,
 		}
@@ -62,9 +63,9 @@ func main() {
 	})
 
 	router.POST("/albums", func(c *gin.Context) {
-		var newAlbum album
+		newAlbum := &album{}
 
-		if err := c.BindJSON(&newAlbum); err != nil {
+		if err := c.BindJSON(newAlbum); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			fmt.Println(err.Error())
 			return
